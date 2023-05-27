@@ -1,14 +1,10 @@
-# Expo Router Example
+# Epub reader
 
-Use [`expo-router`](https://expo.github.io/router) to build native navigation using files in the `app/` directory.
+## Dep
 
-## 🚀 How to use
-
-```sh
-npx create-expo-app -e with-router
-```
-
-## 📝 Notes
-
-- [Expo Router: Docs](https://expo.github.io/router)
-- [Expo Router: Repo](https://github.com/expo/router)
+- Expo
+  - https://docs.expo.dev/versions/latest/
+- Expo router
+  - https://expo.github.io/router/docs/
+- React native
+  - https://reactnative.dev/docs/components-and-apis
