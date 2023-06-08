@@ -26,7 +26,10 @@
     "expo-linking": "~4.0.1",
     "expo-router": "^1.5.3",
     "expo-status-bar": "~1.4.4",
+    "fs": "^0.0.1-security",
+    "jsdom": "^22.1.0",
     "jszip": "^3.10.1",
+    "path": "^0.12.7",
     "react": "18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "0.71.8",
@@ -34,10 +37,13 @@
     "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
     "react-native-svg": "13.4.0",
+    "react-native-xml2js": "^1.0.3",
+    "react-xml-parser": "^1.1.8",
     "tamagui": "^1.30.16"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/jsdom": "^21.1.1"
   },
   "private": true
 }

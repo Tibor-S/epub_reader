@@ -1,16 +1,14 @@
 import { Upload } from "@tamagui/lucide-icons";
 import { useState } from "react";
 import { Button, Text, YStack, styled } from "tamagui"
-import { readAsStringAsync } from 'expo-file-system';
-import JSZip from 'jszip';
 import * as DocumentPicker from 'expo-document-picker';
+import { Book, useBook } from "../../utils/epub";
 
 
 
 
 export default () => {
 
-  const zip = new JSZip();
   const [uri, setURI] = useState<string>();
 
   return (
@@ -21,15 +19,10 @@ export default () => {
             .then((res) => {
               if (res.type === "cancel") return;
               const uri = res.uri;
+
+              /// Lägg till bok och uri i db
               console.log(uri);
-              readAsStringAsync(uri, {encoding: 'base64'})
-                .then((data) => {
-                  zip.loadAsync(data, {base64: true})
-                    .then((zip) => {
-                      console.log(zip.files);
-                    })
-                    .catch((err) => console.error(err));
-                })
+              useBook(uri, (book: Book) => console.log(book))
                 .catch((err) => console.error(err));
             })
             .catch((err) => console.error(err));
