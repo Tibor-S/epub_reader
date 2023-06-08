@@ -2,6 +2,7 @@ import { Upload } from "@tamagui/lucide-icons";
 import { useState } from "react";
 import { Button, Text, YStack, styled } from "tamagui"
 import * as DocumentPicker from 'expo-document-picker';
+import { Title, TitleData, addTitle } from "../../utils/storage";
 import { Book, useBook } from "../../utils/epub";
 
 
@@ -21,9 +22,20 @@ export default () => {
               const uri = res.uri;
 
               /// Lägg till bok och uri i db
-              console.log(uri);
-              useBook(uri, (book: Book) => console.log(book))
+              useBook(uri, (book: Book) => {
+
+                const title: Title = {
+                  title: book.metadata.title[0].text,
+                  isbn: book.metadata.identifier.find((id) => id.ext['opf:scheme'] === 'ISBN')?.text,
+                } 
+                const data: TitleData = {
+                  relImgPath: book.manifest.cover.href,
+                  uri: uri,
+                }
+                addTitle(title, data)
+              })
                 .catch((err) => console.error(err));
+
             })
             .catch((err) => console.error(err));
         }}

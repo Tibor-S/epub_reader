@@ -5,7 +5,7 @@ export default () => {
   const router = useRouter();
 
   useFocusEffect(() => {
-    router.replace("/home/upload");
+    router.replace("/home/library");
   });
   
   return (

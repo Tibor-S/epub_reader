@@ -1,22 +1,69 @@
-import { useState } from "react";
-import { Text } from "tamagui"
+import { useEffect, useState } from "react";
+import { Text, XStack, YStack, styled, Button } from "tamagui"
+import { Book, useBook } from "../../utils/epub";
+import { Title, TitleData, getAllTitles, getData } from "../../utils/storage";
+import { promises } from "fs";
 
 
 
 export default () => {
   
-  const [bookURIS, setBookURIS] = useState<string[]>([
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/7F5CCB0F-3DCC-4759-8106-4988A8AB3121.epub',
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/A1013951-F2B6-47ED-B53D-2C698EB49CA5.epub',
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/A1013951-F2B6-47ED-B53D-2C698EB49CA5.epub',
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/7F5CCB0F-3DCC-4759-8106-4988A8AB3121.epub',
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/A1013951-F2B6-47ED-B53D-2C698EB49CA5.epub',
-    'file:///var/mobile/Containers/Data/Application/812F9E48-9577-40C4-A934-4BE99F349B1D/Library/Caches/ExponentExperienceData/%2540rofk123%252Fepub_reader/DocumentPicker/7F5CCB0F-3DCC-4759-8106-4988A8AB3121.epub',
-  ]);
+  const [bookTitles, setBookTitles] = useState<Title[]>([]);
+  const [bookCovers, setBookCovers] = useState<{[isbn: string]: string}>({});
+  const [bookURIs, setBookURIS] = useState<{[isbn: string]: string}>({});
+
+  useEffect(() => {
+    console.log('useEffect: Loading library titles')
+    getAllTitles().then((titles) => {
+      setBookTitles(titles.titles);
+      return titles.titles;
+    })
+    .then((titles) => {
+      const nCovers = {};
+      const nURIs = {};
+      const errors: any[] = []
+      const promises: Promise<void>[] = []
+      for (const title of titles) {
+        promises.push(getData(title.isbn)
+          .then((data) => {
+            nCovers[title.isbn] = data.relImgPath;
+            nURIs[title.isbn] = data.uri;
+          }).catch((err) => {
+            errors.push(err);
+          })
+        )
+      }
+      Promise.allSettled(promises).then((values) => {
+        setBookCovers(nCovers);
+        setBookURIS(nURIs);
+        if (errors.length > 0) {
+          alert(errors[0]);
+        }
+      });
+    })
+  }, []);
 
   return (
-    <Text>
-      Library
-    </Text>
+    <XStack flexWrap="wrap" >
+      {bookTitles.map(({title, isbn}) => (
+        <BookEl title={title} uri={bookURIs[isbn]} cover={bookCovers[isbn]} key={isbn} />
+      ))}
+    </XStack>
   )
 }
+
+const BookEl = ({title, uri, cover}: {title: string, uri: string, cover: string}) => {
+
+
+  return (
+    <BookContainer>
+      <Text>{title},{cover}</Text>
+    </BookContainer>
+  )
+} 
+
+const BookContainer = styled(YStack, {
+  width: '50%',
+  padding: 10,
+  backgroundColor: '#f1e9c6',
+});

@@ -20,6 +20,7 @@ export type GuideItem = {
 }
 
 export type Book = {
+  uri: string
   metadata: {[key: string]: MetaItem[]}
   manifest: {[id: string]: ManifestItem}
   spine: string[]
@@ -35,7 +36,6 @@ export const useBook = async (uri: string, callback: (book: Book) => void) => {
     .catch((err) => {
       throw new Error('INCORRECT FORMAT: not a zip+epub file'); 
     });
-  console.log(zip.files);
   const xmlText = await getRootPath(zip)
     .then((root) => {
       return zip.file(root).async('text')
@@ -53,6 +53,7 @@ export const useBook = async (uri: string, callback: (book: Book) => void) => {
       throw err;
     } else {
       const book: Book = {
+        uri: uri,
         metadata: extractMetadata(doc),
         manifest: extractManifest(doc),
         spine: extractSpine(doc),
@@ -63,6 +64,19 @@ export const useBook = async (uri: string, callback: (book: Book) => void) => {
   });
   
 }
+
+export const awaitCover = async (book: Book) => {
+  const zip = new JSZip();
+  await readAsStringAsync(book.uri, {encoding: 'base64'})
+    .then(async (data) => {
+      return zip.loadAsync(data, {base64: true})
+    })
+    .catch((err) => {
+      throw new Error('INCORRECT FORMAT: not a zip+epub file'); 
+    });
+  zip.file(book.guide.cover.href).async
+  
+};
 
 const extractGuide = (doc: any) => {
   const guide: {[type: string]: GuideItem} = {};
