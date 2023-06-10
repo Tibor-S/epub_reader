@@ -12,6 +12,7 @@ export type AllTitles = {
 
 export type TitleData = {
   uri: string
+  rootFolder: string
   relImgPath: string
 }
 

@@ -10,7 +10,6 @@ import { Book, useBook } from "../../utils/epub";
 
 export default () => {
 
-  const [uri, setURI] = useState<string>();
 
   return (
     <UploadContainer>
@@ -23,21 +22,24 @@ export default () => {
 
               /// Lägg till bok och uri i db
               useBook(uri, (book: Book) => {
-
+                const isbn = book.metadata.identifier.find((id) => id.ext['opf:scheme'] === 'ISBN')?.text
+                console.log(isbn);
+                
                 const title: Title = {
                   title: book.metadata.title[0].text,
-                  isbn: book.metadata.identifier.find((id) => id.ext['opf:scheme'] === 'ISBN')?.text,
+                  isbn: isbn ? isbn : '-1',
                 } 
                 const data: TitleData = {
                   relImgPath: book.manifest.cover.href,
                   uri: uri,
+                  rootFolder: book.rootFolder,
                 }
                 addTitle(title, data)
               })
-                .catch((err) => console.error(err));
+                .catch((err) => console.error('UPLOAD | USEBOOK:', err));
 
             })
-            .catch((err) => console.error(err));
+            .catch((err) => console.error('UPLOAD | DOCUMENTPICKER:', err));
         }}
       >
         <Upload color='#19dd9c' size="$5" />
